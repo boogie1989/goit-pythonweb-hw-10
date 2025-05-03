@@ -1,57 +1,82 @@
-# Тема 10. Домашня робота
+# Contacts API
 
-Створити REST API для зберігання та управління контактами. API повинен бути побудований з використанням інфраструктури FastAPI та повинен використовувати SQLAlchemy для управління базою даних.
+A REST API for managing contacts, built with FastAPI and SQLAlchemy.
 
-## Технічний опис завданняТехнічний опис завдання
+## Project Structure
 
-- Реалізуйте механізм аутентифікації в застосунку.
-
-- Реалізуйте механізм авторизації за допомогою JWT-токенів, щоб усі операції з контактами проводились лише зареєстрованими користувачами.
-
-- Користувач повинен мати доступ лише до своїх операцій з контактами.
-
-- Реалізуйте механізм верифікації електронної пошти зареєстрованого користувача.
-
-- Обмежте кількість запитів до маршруту користувача /me.
-
-- Увімкніть CORS для свого REST API.
-
-- Реалізуйте можливість оновлення аватара користувача (використовуйте сервіс Cloudinary).
-
-## Як запустити
-
-Створіть та налаштуйте конфігураційний `.env` файл у корені проєкту. Як приклад можете використати файл `example.env`.
+The project follows a modular architecture:
 
 ```
-DB_PORT=5432
-DB_HOST=postgres
-DB_USER=<DB_USER>
-DB_PASSWORD=<DB_PASSWORD>
-DB_NAME=<DB_NAME>
-DB_URL=postgresql+asyncpg://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:<DB_PORT>/<DB_NAME>
-
-PORT=8000
-
-JWT_SECRET=<JWT_SECRET>
-JWT_ALGORITHM=HS256
-JWT_EXPIRATION_SECONDS=3600
-
-CLOUDINARY_NAME=<CLOUDINARY_NAME>
-CLOUDINARY_API_KEY=<CLOUDINARY_API_KEY>
-CLOUDINARY_API_SECRET=<CLOUDINARY_API_SECRET>
-
-MAIL_USERNAME=<MAIL_USERNAME>
-MAIL_PASSWORD=<MAIL_PASSWORD>
-MAIL_FROM=<MAIL_FROM>
-MAIL_PORT=465
-MAIL_SERVER=<MAIL_SERVER>
-MAIL_FROM_NAME=<MAIL_FROM_NAME>
+app/
+├── api/                  # API endpoints
+│   ├── endpoints/        # Route handlers
+│   │   └── contacts.py   # Contacts endpoints
+│   └── router.py         # Main API router
+├── core/                 # Core configuration
+│   ├── config.py         # App settings
+│   └── database.py       # Database connection
+├── crud/                 # Database operations
+│   └── contact.py        # Contact CRUD operations
+├── models/               # SQLAlchemy models
+│   └── contact.py        # Contact model
+└── schemas/              # Pydantic schemas
+    └── contact.py        # Contact validation schemas
+main.py                   # Application entry point
+alembic/                  # Database migrations
 ```
 
-I потім запустіть Docker Compose
+## Requirements
 
-```
-docker-compose up -d
+- Python 3.11+
+- PostgreSQL
+- Docker
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone git@github.com:boogie1989/goit-pythonweb-hw-08.git
+   cd goit-pythonweb-hw-08
+   ```
+
+2. Create a virtual environment and install dependencies:
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. Run PostgreSQL in Docker:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+4. Apply migrations:
+   ```bash
+   alembic upgrade head
+   ```
+
+## Running the API
+
+Start the server:
+
+```bash
+uvicorn main:app --reload
 ```
 
-API буде доступне за адресою: http://localhost:8000/docs
+API is available at: `http://127.0.0.1:8000`
+
+Documentation: `http://127.0.0.1:8000/docs`
+
+## Features
+
+- **POST** `/api/v1/contacts/` — Create a contact
+- **GET** `/api/v1/contacts/` — List all contacts
+- **GET** `/api/v1/contacts/{id}` — Get a contact by ID
+- **PUT** `/api/v1/contacts/{id}` — Update a contact
+- **DELETE** `/api/v1/contacts/{id}` — Delete a contact
+- **GET** `/api/v1/contacts/search/?query=...` — Search by first name, last name, or email
+- **GET** `/api/v1/contacts/birthdays/` — Get contacts with birthdays in the next 7 days
